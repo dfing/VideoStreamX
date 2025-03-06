@@ -6,8 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		847F02C0D98168D9058FBFB3 /* Pods_VideoStreamX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B880782819301E37373D9797 /* Pods_VideoStreamX.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		0BF5BC21968FC1E37E5A9C86 /* Pods-VideoStreamX.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoStreamX.debug.xcconfig"; path = "Target Support Files/Pods-VideoStreamX/Pods-VideoStreamX.debug.xcconfig"; sourceTree = "<group>"; };
 		6B02635B2D797383002F4DB8 /* VideoStreamX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoStreamX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7AFB27F87D159B2A4571411F /* Pods-VideoStreamX.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoStreamX.release.xcconfig"; path = "Target Support Files/Pods-VideoStreamX/Pods-VideoStreamX.release.xcconfig"; sourceTree = "<group>"; };
+		B880782819301E37373D9797 /* Pods_VideoStreamX.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoStreamX.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,17 +43,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				847F02C0D98168D9058FBFB3 /* Pods_VideoStreamX.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		23EDA0559AC78BC0B16B0BE2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B880782819301E37373D9797 /* Pods_VideoStreamX.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		477BF12E2615113449FFB731 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0BF5BC21968FC1E37E5A9C86 /* Pods-VideoStreamX.debug.xcconfig */,
+				7AFB27F87D159B2A4571411F /* Pods-VideoStreamX.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		6B0263522D797382002F4DB8 = {
 			isa = PBXGroup;
 			children = (
 				6B02635D2D797383002F4DB8 /* VideoStreamX */,
 				6B02635C2D797383002F4DB8 /* Products */,
+				477BF12E2615113449FFB731 /* Pods */,
+				23EDA0559AC78BC0B16B0BE2 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -65,9 +92,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B02636E2D797384002F4DB8 /* Build configuration list for PBXNativeTarget "VideoStreamX" */;
 			buildPhases = (
+				D408B9956BD8CBD15397C238 /* [CP] Check Pods Manifest.lock */,
 				6B0263572D797382002F4DB8 /* Sources */,
 				6B0263582D797382002F4DB8 /* Frameworks */,
 				6B0263592D797382002F4DB8 /* Resources */,
+				1A6C980D8E9099F8C11EED0B /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -77,8 +106,6 @@
 				6B02635D2D797383002F4DB8 /* VideoStreamX */,
 			);
 			name = VideoStreamX;
-			packageProductDependencies = (
-			);
 			productName = VideoStreamX;
 			productReference = 6B02635B2D797383002F4DB8 /* VideoStreamX.app */;
 			productType = "com.apple.product-type.application";
@@ -127,6 +154,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1A6C980D8E9099F8C11EED0B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoStreamX/Pods-VideoStreamX-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VideoStreamX/Pods-VideoStreamX-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VideoStreamX/Pods-VideoStreamX-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D408B9956BD8CBD15397C238 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VideoStreamX-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		6B0263572D797382002F4DB8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -140,12 +209,14 @@
 /* Begin XCBuildConfiguration section */
 		6B02636F2D797384002F4DB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0BF5BC21968FC1E37E5A9C86 /* Pods-VideoStreamX.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y569T8A2Q5;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoStreamX/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VSX;
@@ -173,12 +244,14 @@
 		};
 		6B0263702D797384002F4DB8 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7AFB27F87D159B2A4571411F /* Pods-VideoStreamX.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y569T8A2Q5;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoStreamX/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = VSX;
