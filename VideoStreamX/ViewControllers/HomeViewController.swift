@@ -58,7 +58,13 @@ class HomeViewController: UIViewController {
 }
 
 extension HomeViewController: UITableViewDelegate {
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let video = viewModel.videos[indexPath.row]
+        let playerViewController = PlayerViewController(video: video)
+        playerViewController.modalPresentationStyle = .fullScreen
+        present(playerViewController, animated: true)
+//        navigationController?.pushViewController(playerViewController, animated: true)
+    }
 }
 
 extension HomeViewController: UITableViewDataSource {
