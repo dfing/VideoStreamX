@@ -67,6 +67,7 @@ class PlayerViewController: UIViewController {
         controlView.addSubview(forwardButton)
         controlView.addSubview(timeSlider)
         controlView.addSubview(closeButton)
+        controlView.addSubview(settingButton)
         controlView.addSubview(currentTimeLabel)
         controlView.addSubview(displayTimeLabel)
 
@@ -94,6 +95,11 @@ class PlayerViewController: UIViewController {
         closeButton.snp.makeConstraints({
             $0.top.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-20)
+            $0.width.height.equalTo(40)
+        })
+        settingButton.snp.makeConstraints({
+            $0.top.equalToSuperview().offset(20)
+            $0.trailing.equalTo(closeButton.snp.leading).offset(-10)
             $0.width.height.equalTo(40)
         })
         playButton.snp.makeConstraints({
@@ -198,6 +204,40 @@ class PlayerViewController: UIViewController {
         present(alert, animated: true)
     }
 
+    private func showSetting() {
+        let settingVC = SettingViewController { [weak self] in
+            // Close setting
+            guard let self = self else { return }
+            guard let settingView = self.view.viewWithTag(919),
+                  let settingVC = self.children.first(where: { $0.view == settingView }) as? SettingViewController else {
+                return
+            }
+
+            settingVC.willMove(toParent: nil)
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseIn, animations: {
+                settingVC.view.frame.origin.x = UIScreen.main.bounds.width
+            }, completion: { _ in
+                // 移除視圖和子視圖控制器
+                settingVC.view.removeFromSuperview()
+                settingVC.removeFromParent()
+            })
+        }
+        addChild(settingVC)
+        let screenWidth = UIScreen.main.bounds.width
+        let panelWidth = screenWidth / 3
+        settingVC.view.frame = CGRect(x: screenWidth,
+                                      y: 0,
+                                      width: panelWidth,
+                                      height: view.bounds.height)
+        settingVC.view.tag = 919
+        view.addSubview(settingVC.view)
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: {
+            settingVC.view.frame.origin.x = screenWidth - panelWidth
+        }, completion: { _ in
+            settingVC.didMove(toParent: self)
+        })
+    }
+
     private func updateTimeDisplay() {
         displayTimeLabel.text = (viewModel.duration - viewModel.currentTime).toTimeString()
         if viewModel.duration > 0 && !viewModel.isSliderDragging {
@@ -269,6 +309,10 @@ class PlayerViewController: UIViewController {
         let newTime = Double(sender.value) * viewModel.duration
         viewModel.seek(to: newTime)
         scheduleHideControls()
+    }
+    @objc
+    private func settingButtonTapped() {
+        showSetting()
     }
 
 
@@ -369,6 +413,13 @@ class PlayerViewController: UIViewController {
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         slider.addTarget(self, action: #selector(sliderTouchEnded(_:)), for: [.touchUpInside, .touchUpOutside])
         return slider
+    }()
+    private lazy var settingButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "gearshape.fill"), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
+        return button
     }()
 }
 
