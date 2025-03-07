@@ -12,7 +12,7 @@ class PlayerViewModel {
     private var cancellables = Set<AnyCancellable>()
 
     @Published private(set) var currentVideo: Video?
-    @Published private(set) var showControls: Bool = false
+    @Published var showControls: Bool = false
     @Published private(set) var isPlaying: Bool = false
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var isPlayReady: Bool = false
@@ -80,6 +80,7 @@ class PlayerViewModel {
     func seek(to time: Double) {
         guard isPlayReady else { return }
         player?.seek(to: CMTime(seconds: time, preferredTimescale: 1))
+        isPlayEnd = false
     }
 
     func skipForward(seconds: Double = 10) {

@@ -15,13 +15,19 @@ class PlayerViewController: UIViewController {
     private var cancellable = Set<AnyCancellable>()
 
     private var isSliderDragging = false
+    private var controlsHideWorkItem: DispatchWorkItem?
 
     init(video: Video) {
         self.viewModel = PlayerViewModel()
         super.init(nibName: nil, bundle: nil)
         self.viewModel.loadVideo(video)
     }
-    
+
+    deinit {
+        controlsHideWorkItem?.cancel()
+        controlsHideWorkItem = nil
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -45,6 +51,7 @@ class PlayerViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer.frame = playerView.bounds
+        updateCurrentTimeDisplay()
     }
 
     // MARK: - Private Methods
@@ -112,6 +119,10 @@ class PlayerViewController: UIViewController {
         displayTimeLabel.snp.makeConstraints({
             $0.trailing.equalToSuperview().offset(-40)
             $0.centerY.equalTo(timeSlider)
+        })
+        currentTimeLabel.snp.makeConstraints({
+            $0.bottom.equalTo(timeSlider.snp.top).offset(-5)
+            $0.centerX.equalTo(timeSlider.snp.leading)
         })
     }
 
@@ -196,14 +207,39 @@ class PlayerViewController: UIViewController {
             self.timeSlider.value = Float(viewModel.currentTime / viewModel.duration)
         }
     }
+    private func updateCurrentTimeDisplay() {
+        let trackRect = timeSlider.trackRect(forBounds: timeSlider.bounds)
+        let thumbRect = timeSlider.thumbRect(forBounds: timeSlider.bounds, trackRect: trackRect, value: timeSlider.value)
+        // 計算滑塊的中心 X 位置
+        let thumbCenterX = thumbRect.midX
+        // 更新標籤位置以跟隨滑塊
+        currentTimeLabel.snp.updateConstraints { make in
+            make.centerX.equalTo(timeSlider.snp.leading).offset(thumbCenterX)
+        }
+    }
+
+    private func scheduleHideControls() {
+        controlsHideWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.viewModel.showControls = false
+        }
+        controlsHideWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem)
+    }
 
     @objc
     private func playerViewTapped() {
         viewModel.toggleControls()
+        if viewModel.showControls {
+            scheduleHideControls()
+        } else {
+            controlsHideWorkItem?.cancel()
+        }
     }
     @objc
     private func playButtonTapped() {
         viewModel.isPlaying ? viewModel.pause() : viewModel.play()
+        scheduleHideControls()
     }
     @objc
     private func closeButtonTapped() {
@@ -213,22 +249,29 @@ class PlayerViewController: UIViewController {
     @objc
     private func rewindButtonTapped() {
         viewModel.skipBackward()
+        scheduleHideControls()
     }
     @objc
     private func forwardButtonTapped() {
         viewModel.skipForward()
+        scheduleHideControls()
     }
     @objc
     private func sliderValueChanged(_ sender: UISlider) {
         isSliderDragging = true
         let newTime = Double(sender.value) * viewModel.duration
         currentTimeLabel.text = newTime.toTimeString()
+        controlsHideWorkItem?.cancel()
+        UIView.animate(withDuration: 0.1) {
+            self.view.layoutIfNeeded()
+        }
     }
     @objc
     private func sliderTouchEnded(_ sender: UISlider) {
         let newTime = Double(sender.value) * viewModel.duration
         viewModel.seek(to: newTime)
         isSliderDragging = false
+        scheduleHideControls()
     }
 
 
@@ -290,11 +333,16 @@ class PlayerViewController: UIViewController {
         button.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         return button
     }()
-    private lazy var currentTimeLabel: UILabel = {
-        let label = UILabel()
+    private lazy var currentTimeLabel: PaddingLabel = {
+        let label = PaddingLabel()
         label.text = "00:00"
         label.textColor = .white
+        label.textAlignment = .center
+        label.backgroundColor = .black.withAlphaComponent(0.8)
+        label.layer.cornerRadius = 4
+        label.layer.masksToBounds = true
         label.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
+        label.textInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
         return label
     }()
     private lazy var displayTimeLabel: UILabel = {
