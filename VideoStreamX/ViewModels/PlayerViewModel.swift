@@ -21,6 +21,7 @@ class PlayerViewModel {
     @Published private(set) var currentTime: Double = 0
     @Published private(set) var duration: Double = 0
     @Published private(set) var bufferedTime: Double = 0
+    @Published var isSliderDragging: Bool = false
 
     private(set) var player: AVPlayer?
     private var playerItem: AVPlayerItem?
@@ -79,7 +80,12 @@ class PlayerViewModel {
 
     func seek(to time: Double) {
         guard isPlayReady else { return }
-        player?.seek(to: CMTime(seconds: time, preferredTimescale: 1))
+        player?.seek(to: CMTime(seconds: time, preferredTimescale: 1),
+                     toleranceBefore: .zero,
+                     toleranceAfter: .zero,
+                     completionHandler: { _ in
+             self.isSliderDragging = false
+        })
         isPlayEnd = false
     }
 

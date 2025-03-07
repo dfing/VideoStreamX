@@ -14,7 +14,6 @@ class PlayerViewController: UIViewController {
     private let viewModel: PlayerViewModel
     private var cancellable = Set<AnyCancellable>()
 
-    private var isSliderDragging = false
     private var controlsHideWorkItem: DispatchWorkItem?
 
     init(video: Video) {
@@ -180,8 +179,7 @@ class PlayerViewController: UIViewController {
         viewModel.$currentTime
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentTime in
-                guard let self = self, !self.isSliderDragging else { return }
-                self.updateTimeDisplay()
+                self?.updateTimeDisplay()
             }
             .store(in: &cancellable)
 
@@ -201,9 +199,9 @@ class PlayerViewController: UIViewController {
     }
 
     private func updateTimeDisplay() {
-        currentTimeLabel.text = viewModel.currentTime.toTimeString()
         displayTimeLabel.text = (viewModel.duration - viewModel.currentTime).toTimeString()
-        if viewModel.duration > 0 {
+        if viewModel.duration > 0 && !viewModel.isSliderDragging {
+            currentTimeLabel.text = viewModel.currentTime.toTimeString()
             self.timeSlider.value = Float(viewModel.currentTime / viewModel.duration)
         }
     }
@@ -258,7 +256,7 @@ class PlayerViewController: UIViewController {
     }
     @objc
     private func sliderValueChanged(_ sender: UISlider) {
-        isSliderDragging = true
+        viewModel.isSliderDragging = true
         let newTime = Double(sender.value) * viewModel.duration
         currentTimeLabel.text = newTime.toTimeString()
         controlsHideWorkItem?.cancel()
@@ -270,7 +268,6 @@ class PlayerViewController: UIViewController {
     private func sliderTouchEnded(_ sender: UISlider) {
         let newTime = Double(sender.value) * viewModel.duration
         viewModel.seek(to: newTime)
-        isSliderDragging = false
         scheduleHideControls()
     }
 
