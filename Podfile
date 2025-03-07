@@ -7,5 +7,6 @@ target 'VideoStreamX' do
 
   # Pods for VideoStreamX
   pod 'SnapKit'
+  pod 'SDWebImage', '~> 5.0'
 
 end
