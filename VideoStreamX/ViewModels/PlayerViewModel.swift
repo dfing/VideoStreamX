@@ -13,23 +13,30 @@ class PlayerViewModel {
 
     @Published private(set) var currentVideo: Video?
     @Published private(set) var showControls: Bool = false
-    @Published private(set) var isAllSet: Bool = false
     @Published private(set) var isPlaying: Bool = false
     @Published private(set) var isLoading: Bool = false
+    @Published private(set) var isPlayReady: Bool = false
+    @Published private(set) var isPlayEnd: Bool = false
     @Published private(set) var errorMessage: String? = nil
     @Published private(set) var currentTime: Double = 0
     @Published private(set) var duration: Double = 0
+    @Published private(set) var bufferedTime: Double = 0
 
     private(set) var player: AVPlayer?
     private var playerItem: AVPlayerItem?
+    private var timeObserver: Any?
 
     init() {
+    }
+
+    deinit {
+        removeTimeObserver()
     }
 
     func loadVideo(_ video: Video) {
         self.currentVideo = video
         self.isLoading = true
-        self.isAllSet = false
+        self.isPlayReady = false
 
         guard let videoURL = URL(string: video.videoURL) else {
             self.errorMessage = "Invalid video URL"
@@ -44,8 +51,8 @@ class PlayerViewModel {
             player?.replaceCurrentItem(with: playerItem!)
         }
 
-        isLoading = false
-        isAllSet = true
+        setupTimeObserver()
+        observePlayerItem()
     }
 
     // MARK: - Player Methods
@@ -54,21 +61,86 @@ class PlayerViewModel {
     }
 
     func play() {
-        guard isAllSet else { return }
+        guard isPlayReady else { return }
+        if isPlayEnd {
+            player?.seek(to: .zero)
+            isPlayEnd = false
+        }
+
         player?.play()
         isPlaying = true
     }
 
     func pause() {
-        guard isAllSet else { return }
+        guard isPlayReady else { return }
         player?.pause()
         isPlaying = false
     }
 
     func seek(to time: Double) {
-        guard isAllSet else { return }
+        guard isPlayReady else { return }
         player?.seek(to: CMTime(seconds: time, preferredTimescale: 1))
     }
 
+    func skipForward(seconds: Double = 10) {
+        let newTime = min(currentTime + seconds, duration)
+        seek(to: newTime)
+    }
+    
+    func skipBackward(seconds: Double = 10) {
+        let newTime = max(currentTime - seconds, 0)
+        seek(to: newTime)
+    }
+
     // MARK: - Private Methods
+    private func observePlayerItem() {
+        NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime, object: playerItem)
+            .sink { [weak self] _ in
+                self?.isPlaying = false
+                self?.isPlayEnd = true
+            }
+            .store(in: &cancellables)
+
+        playerItem?.publisher(for: \.status)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                switch status {
+                case .readyToPlay:
+                    self?.isLoading = false
+                    self?.isPlayReady = true
+                    self?.duration = self?.playerItem?.duration.seconds ?? 0
+
+                case .failed:
+                    self?.isLoading = false
+                    self?.isPlayReady = false
+                    self?.errorMessage = self?.playerItem?.error?.localizedDescription ?? "Failed to load video"
+                default:
+                    break
+                }
+            }
+            .store(in: &cancellables)
+    }
+
+    private func setupTimeObserver() {
+        removeTimeObserver()
+
+        let interval = CMTime(seconds: 0.5, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+        timeObserver = player?.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
+            self?.currentTime = time.seconds
+
+            // Update buffered time
+            if let playerItem = self?.playerItem,
+               let timeRanges = playerItem.loadedTimeRanges.first?.timeRangeValue {
+                let bufferedTime = timeRanges.start.seconds + timeRanges.duration.seconds
+                self?.bufferedTime = bufferedTime
+            }
+        }
+    }
+
+    private func removeTimeObserver() {
+        if let timeObserver = timeObserver, let player = player {
+            player.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
+    }
 }

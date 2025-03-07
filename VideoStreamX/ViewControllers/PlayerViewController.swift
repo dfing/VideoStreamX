@@ -14,6 +14,8 @@ class PlayerViewController: UIViewController {
     private let viewModel: PlayerViewModel
     private var cancellable = Set<AnyCancellable>()
 
+    private var isSliderDragging = false
+
     init(video: Video) {
         self.viewModel = PlayerViewModel()
         super.init(nibName: nil, bundle: nil)
@@ -55,9 +57,12 @@ class PlayerViewController: UIViewController {
         playerView.addSubview(controlView)
         controlView.addSubview(titleLabel)
         controlView.addSubview(playButton)
+        controlView.addSubview(rewindButton)
+        controlView.addSubview(forwardButton)
+        controlView.addSubview(timeSlider)
         controlView.addSubview(closeButton)
         controlView.addSubview(currentTimeLabel)
-        controlView.addSubview(durationLabel)
+        controlView.addSubview(displayTimeLabel)
 
         playerView.addSubview(loadingIndicator)
 
@@ -76,7 +81,7 @@ class PlayerViewController: UIViewController {
         })
         titleLabel.snp.makeConstraints({
             $0.top.equalToSuperview().offset(20)
-            $0.leading.equalTo(controlView.safeAreaLayoutGuide.snp.leading).offset(40)
+            $0.leading.equalToSuperview().offset(40)
             $0.width.equalToSuperview().multipliedBy(0.6)
         })
 
@@ -88,6 +93,25 @@ class PlayerViewController: UIViewController {
         playButton.snp.makeConstraints({
             $0.center.equalToSuperview()
             $0.width.height.equalTo(60)
+        })
+        rewindButton.snp.makeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.trailing.equalTo(playButton.snp.leading).offset(-70)
+            $0.size.equalTo(playButton)
+        })
+        forwardButton.snp.makeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.leading.equalTo(playButton.snp.trailing).offset(70)
+            $0.size.equalTo(playButton)
+        })
+        timeSlider.snp.makeConstraints({
+            $0.leading.equalToSuperview().offset(40)
+            $0.bottom.equalToSuperview().offset(-50)
+            $0.trailing.equalTo(displayTimeLabel.snp.leading).offset(-20)
+        })
+        displayTimeLabel.snp.makeConstraints({
+            $0.trailing.equalToSuperview().offset(-40)
+            $0.centerY.equalTo(timeSlider)
         })
     }
 
@@ -125,6 +149,16 @@ class PlayerViewController: UIViewController {
             }
             .store(in: &cancellable)
 
+        viewModel.$isPlayReady
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReady in
+                if isReady {
+                    self?.viewModel.play()
+                }
+            }
+            .store(in: &cancellable)
+
+
         viewModel.$isPlaying
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isPlaying in
@@ -135,12 +169,15 @@ class PlayerViewController: UIViewController {
         viewModel.$currentTime
             .receive(on: DispatchQueue.main)
             .sink { [weak self] currentTime in
+                guard let self = self, !self.isSliderDragging else { return }
+                self.updateTimeDisplay()
             }
             .store(in: &cancellable)
 
         viewModel.$duration
             .receive(on: DispatchQueue.main)
             .sink { [weak self] duration in
+                self?.updateTimeDisplay()
             }
             .store(in: &cancellable)
     }
@@ -151,6 +188,15 @@ class PlayerViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
+
+    private func updateTimeDisplay() {
+        currentTimeLabel.text = viewModel.currentTime.toTimeString()
+        displayTimeLabel.text = (viewModel.duration - viewModel.currentTime).toTimeString()
+        if viewModel.duration > 0 {
+            self.timeSlider.value = Float(viewModel.currentTime / viewModel.duration)
+        }
+    }
+
     @objc
     private func playerViewTapped() {
         viewModel.toggleControls()
@@ -164,6 +210,27 @@ class PlayerViewController: UIViewController {
         viewModel.pause()
         dismiss(animated: true, completion: nil)
     }
+    @objc
+    private func rewindButtonTapped() {
+        viewModel.skipBackward()
+    }
+    @objc
+    private func forwardButtonTapped() {
+        viewModel.skipForward()
+    }
+    @objc
+    private func sliderValueChanged(_ sender: UISlider) {
+        isSliderDragging = true
+        let newTime = Double(sender.value) * viewModel.duration
+        currentTimeLabel.text = newTime.toTimeString()
+    }
+    @objc
+    private func sliderTouchEnded(_ sender: UISlider) {
+        let newTime = Double(sender.value) * viewModel.duration
+        viewModel.seek(to: newTime)
+        isSliderDragging = false
+    }
+
 
     // MARK: - Components
     private lazy var playerView: UIView = {
@@ -195,6 +262,27 @@ class PlayerViewController: UIViewController {
         button.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
         return button
     }()
+    private lazy var rewindButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "10.arrow.trianglehead.counterclockwise"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentHorizontalAlignment = .fill
+        button.contentVerticalAlignment = .fill
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(rewindButtonTapped), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var forwardButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "10.arrow.trianglehead.clockwise"), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentHorizontalAlignment = .fill
+        button.contentVerticalAlignment = .fill
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(forwardButtonTapped), for: .touchUpInside)
+        return button
+    }()
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -209,7 +297,7 @@ class PlayerViewController: UIViewController {
         label.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         return label
     }()
-    private lazy var durationLabel: UILabel = {
+    private lazy var displayTimeLabel: UILabel = {
         let label = UILabel()
         label.text = "00:00"
         label.textColor = .white
@@ -227,6 +315,15 @@ class PlayerViewController: UIViewController {
         label.textColor = .white
         label.font = .systemFont(ofSize: 20, weight: .bold)
         return label
+    }()
+    private lazy var timeSlider: UISlider = {
+        let slider = UISlider()
+        slider.minimumTrackTintColor = .systemRed
+        slider.maximumTrackTintColor = UIColor.white.withAlphaComponent(0.3)
+        slider.thumbTintColor = .white
+        slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+        slider.addTarget(self, action: #selector(sliderTouchEnded(_:)), for: [.touchUpInside, .touchUpOutside])
+        return slider
     }()
 }
 

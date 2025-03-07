@@ -17,3 +17,9 @@ extension Int {
         }
     }
 }
+
+extension Double {
+    func toTimeString() -> String {
+        return Int(self).toTimeString()
+    }
+}
