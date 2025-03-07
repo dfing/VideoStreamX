@@ -1,0 +1,121 @@
+{
+  "videos": [
+    {
+      "id": "v1",
+      "title": "大自然風景記錄片：冰川與雨林",
+      "description": "這部影片帶您探索地球上最美麗的自然景觀。從壯觀的冰川到神秘的雨林，見證大自然的力量與美麗。",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "duration": 598,
+      "author": "自然探索頻道"
+    },
+    {
+      "id": "v2",
+      "title": "城市夜景城市夜景縮時攝影",
+      "description": "現代大都市的縮時攝影，展現了城市從日落到黎明的變化。燈光、車流與建築共同創造出迷人的城市夜景。",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "duration": 435,
+      "author": "城市視角工作室"
+    },
+    {
+      "id": "v3",
+      "title": "水下世界探索：珊瑚礁生態系統",
+      "description": "潛入深海，探索豐富多彩的珊瑚礁生態系統。跟隨專業潛水員的鏡頭，欣賞海洋中最美麗的生物。",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "duration": 362,
+      "author": "深海探險隊"
+    },
+    {
+      "id": "v4",
+      "title": "Tears of Steel",
+      "description": "Tears of Steel was realized with crowd-funding by users of the open source 3D creation tool Blender.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/TearsOfSteel.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+      "duration": 734,
+      "author": "Blender Foundation"
+    },
+    {
+      "id": "v5",
+      "title": "Sintel",
+      "description": "Sintel is an independently produced short film, initiated by the Blender Foundation.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/Sintel.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+      "duration": 888,
+      "author": "Blender Foundation"
+    },
+    {
+      "id": "v6",
+      "title": "For Bigger Escapes",
+      "description": "Introducing Chromecast. The easiest way to enjoy online video and music on your TV.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "duration": 15,
+      "author": "Google"
+    },
+    {
+      "id": "v7",
+      "title": "For Bigger Fun",
+      "description": "Introducing Chromecast. The easiest way to enjoy online video and music on your TV.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerFun.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      "duration": 60,
+      "author": "Google"
+    },
+    {
+      "id": "v8",
+      "title": "For Bigger Joyrides",
+      "description": "Introducing Chromecast. The easiest way to enjoy online video and music on your TV.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      "duration": 15,
+      "author": "Google"
+    },
+    {
+      "id": "v9",
+      "title": "For Bigger Meltdowns",
+      "description": "Introducing Chromecast. The easiest way to enjoy online video and music on your TV.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerMeltdowns.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+      "duration": 15,
+      "author": "Google"
+    },
+    {
+      "id": "v10",
+      "title": "Subaru Outback On Street And Dirt",
+      "description": "Smoking Tire takes the all-new Subaru Outback to the mountains and a muddy embankment to see how it handles.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/SubaruOutbackOnStreetAndDirt.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+      "duration": 596,
+      "author": "Garage419"
+    },
+    {
+      "id": "v11",
+      "title": "We Are Going On Bullrun",
+      "description": "The Smoking Tire is going on the 2010 Bullrun Live Rally in a 2011 Shelby GT500.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WeAreGoingOnBullrun.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
+      "duration": 182,
+      "author": "Garage419"
+    },
+    {
+      "id": "v12",
+      "title": "What Car Can You Get For A Grand?",
+      "description": "The Smoking Tire meets up with Chris and Jorge from CarsForAGrand.com to see just how far $1,000 can go.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
+      "duration": 331,
+      "author": "Garage419"
+    },
+    {
+      "id": "v13",
+      "title": "Volkswagen GTI Review",
+      "description": "The Smoking Tire heads out to Adams Motorsports Park in Riverside, CA to test the most requested car of 2010.",
+      "thumbnailURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/VolkswagenGTIReview.jpg",
+      "videoURL": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
+      "duration": 121,
+      "author": "Garage419"
+    }
+  ]
+}
