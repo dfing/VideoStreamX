@@ -22,6 +22,7 @@ class PlayerViewModel {
     @Published private(set) var currentTime: Double = 0
     @Published private(set) var duration: Double = 0
     @Published private(set) var bufferedTime: Double = 0
+    @Published private(set) var playbackSpeed: Float = 1.0
     @Published var isSliderDragging: Bool = false
     @Published var shouldAutoHideControls: Bool = UserSettings.shared.autoHideControls
 
@@ -72,7 +73,7 @@ class PlayerViewModel {
         }
 
         player?.play()
-        player?.rate = UserSettings.shared.playbackSpeed
+        setPlaybackRate(UserSettings.shared.playbackSpeed)
         isPlaying = true
     }
 
@@ -104,6 +105,7 @@ class PlayerViewModel {
     }
 
     func setPlaybackRate(_ rate: Float) {
+        playbackSpeed = rate
         player?.rate = rate
     }
 

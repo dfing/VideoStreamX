@@ -65,6 +65,7 @@ class PlayerViewController: UIViewController {
         controlView.addSubview(playButton)
         controlView.addSubview(rewindButton)
         controlView.addSubview(forwardButton)
+        controlView.addSubview(speedLabel)
         controlView.addSubview(timeSlider)
         controlView.addSubview(closeButton)
         controlView.addSubview(settingButton)
@@ -175,6 +176,17 @@ class PlayerViewController: UIViewController {
             }
             .store(in: &cancellable)
 
+        viewModel.$playbackSpeed
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] speed in
+                if speed == 1.0 {
+                    self?.speedLabel.text = nil
+                } else {
+                    self?.speedLabel.text = "Playback speed: \(speed)x"
+                }
+            }
+            .store(in: &cancellable)
+
         viewModel.setupSettingsObservers()
     }
 
@@ -226,6 +238,7 @@ class PlayerViewController: UIViewController {
             self.timeSlider.value = Float(viewModel.currentTime / viewModel.duration)
         }
     }
+    
     private func updateCurrentTimeDisplay() {
         let trackRect = timeSlider.trackRect(forBounds: timeSlider.bounds)
         let thumbRect = timeSlider.thumbRect(forBounds: timeSlider.bounds, trackRect: trackRect, value: timeSlider.value)
@@ -296,7 +309,6 @@ class PlayerViewController: UIViewController {
     private func settingButtonTapped() {
         showSetting()
     }
-
 
     // MARK: - Components
     private lazy var playerView: UIView = {
@@ -403,6 +415,12 @@ class PlayerViewController: UIViewController {
         button.addTarget(self, action: #selector(settingButtonTapped), for: .touchUpInside)
         return button
     }()
+    private lazy var speedLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        return label
+    }()
 }
 
 extension PlayerViewController {
@@ -415,15 +433,11 @@ extension PlayerViewController {
     }
 
     func updateControlsConstraintsForNewOrientation(isPortrait: Bool) {
-
-
         if isPortrait {
             setupPortraitConstraints()
         } else {
             setupLandscapeConstraints()
         }
-
-        // 強制更新畫面
         view.layoutIfNeeded()
     }
 
@@ -433,7 +447,6 @@ extension PlayerViewController {
             $0.leading.equalToSuperview().offset(40)
             $0.width.equalToSuperview().multipliedBy(0.6)
         })
-
         closeButton.snp.remakeConstraints({
             $0.top.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().offset(-40)
@@ -458,6 +471,10 @@ extension PlayerViewController {
             $0.leading.equalTo(playButton.snp.trailing).offset(70)
             $0.size.equalTo(playButton)
         })
+        speedLabel.snp.remakeConstraints({
+            $0.centerX.equalTo(playButton)
+            $0.bottom.equalTo(timeSlider.snp.top).offset(-30)
+        })
         timeSlider.snp.remakeConstraints({
             $0.leading.equalToSuperview().offset(40)
             $0.bottom.equalToSuperview().offset(-50)
@@ -475,7 +492,6 @@ extension PlayerViewController {
             $0.leading.equalToSuperview().offset(10)
             $0.width.equalToSuperview().multipliedBy(0.6)
         })
-
         closeButton.snp.remakeConstraints({
             $0.top.equalTo(controlView.safeAreaLayoutGuide.snp.top).offset(20)
             $0.trailing.equalToSuperview().offset(-20)
@@ -499,6 +515,10 @@ extension PlayerViewController {
             $0.centerY.equalTo(playButton)
             $0.leading.equalTo(playButton.snp.trailing).offset(50)
             $0.size.equalTo(playButton)
+        })
+        speedLabel.snp.remakeConstraints({
+            $0.centerX.equalTo(playButton)
+            $0.bottom.equalTo(timeSlider.snp.top).offset(-50)
         })
         timeSlider.snp.remakeConstraints({
             $0.leading.equalToSuperview().offset(20)
