@@ -33,6 +33,7 @@ class SettingViewController: UIViewController {
     }()
 
     private var dismissHandler: (() -> Void)?
+    private var userSettings = UserSettings.shared
 
     init(dismissHandler: (() -> Void)? = nil) {
         self.dismissHandler = dismissHandler
@@ -78,21 +79,31 @@ class SettingViewController: UIViewController {
             $0.leading.trailing.equalToSuperview().inset(20)
         })
 
-        let options = ["0.5x", "0.75x", "1x", "1.25x", "1.5x"]
-        let segmentControl = SegmentControl(title: "Speed", options: options, default: 2) { index in
-
+        let options = [("0.5x", 0.5),
+                       ("0.75x", 0.75),
+                       ("1x", 1.0),
+                       ("1.25x", 1.25),
+                       ("1.5x", 1.5)]
+        let currentSpeed = userSettings.playbackSpeed
+        let defaultIndex = options.firstIndex(where: { abs(Float($0.1) - currentSpeed) < 0.01 }) ?? 2
+        let segmentControl = SegmentControl(title: "Speed", options: options,
+                                            default: defaultIndex) { [weak self] option in
+            let valueFloat = Float(option.value as? Double ?? 1.0)
+            self?.userSettings.playbackSpeed = valueFloat
         }
 
-        let autoplaySwitchControl = SwtichControl(title: "Auto Play", default: true, switchToggled: { isOn in
-
+        let autoPlaySwitchControl = SwtichControl(title: "Auto Play",
+                                                  default: userSettings.autoPlay, switchToggled: { [weak self] isOn in
+            self?.userSettings.autoPlay = isOn
         })
 
-        let autoHideSwitchControl = SwtichControl(title: "Auto Hide Controls", default: true, switchToggled: { isOn in
-
+        let autoHideSwitchControl = SwtichControl(title: "Auto Hide Controls",
+                                                  default: userSettings.autoHideControls, switchToggled: { [weak self] isOn in
+            self?.userSettings.autoHideControls = isOn
         })
 
         stackView.addArrangedSubview(segmentControl)
-        stackView.addArrangedSubview(autoplaySwitchControl)
+        stackView.addArrangedSubview(autoPlaySwitchControl)
         stackView.addArrangedSubview(autoHideSwitchControl)
     }
 

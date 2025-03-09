@@ -168,8 +168,12 @@ class PlayerViewController: UIViewController {
         viewModel.$isPlayReady
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isReady in
-                if isReady {
+                guard isReady else { return }
+                if UserSettings.shared.autoPlay {
                     self?.viewModel.play()
+                } else {
+                    self?.viewModel.showControls = true
+                    self?.scheduleHideControls()
                 }
             }
             .store(in: &cancellable)
@@ -195,6 +199,19 @@ class PlayerViewController: UIViewController {
                 self?.updateTimeDisplay()
             }
             .store(in: &cancellable)
+
+        viewModel.$shouldAutoHideControls
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] shouldAutoHide in
+                if shouldAutoHide && self?.viewModel.showControls == true {
+                    self?.scheduleHideControls()
+                } else if !shouldAutoHide {
+                    self?.controlsHideWorkItem?.cancel()
+                }
+            }
+            .store(in: &cancellable)
+
+        viewModel.setupSettingsObservers()
     }
 
     // MARK: - Actions
@@ -257,6 +274,7 @@ class PlayerViewController: UIViewController {
     }
 
     private func scheduleHideControls() {
+        guard UserSettings.shared.autoHideControls else { return }
         controlsHideWorkItem?.cancel()
         let workItem = DispatchWorkItem { [weak self] in
             self?.viewModel.showControls = false

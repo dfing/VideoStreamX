@@ -8,10 +8,11 @@
 import UIKit
 
 class SegmentControl: UIView {
+    typealias Option = (string: String, value: Any)
     var title: String?
-    var options: [String]
+    var options: [Option]
     var `default`: Int
-    var valueChanged: ((Float) -> Void)?
+    var valueChanged: ((Option) -> Void)?
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = title
@@ -21,12 +22,12 @@ class SegmentControl: UIView {
     }()
     private var segmentControl: UISegmentedControl
 
-    init(title: String?, options: [String], `default`: Int, valueChanged: ((Float) -> Void)?) {
+    init(title: String?, options: [Option], `default`: Int, valueChanged: ((Option) -> Void)?) {
         self.title = title
         self.options = options
         self.`default` = min(options.count, max(0, `default`))
         self.valueChanged = valueChanged
-        self.segmentControl = UISegmentedControl(items: options)
+        self.segmentControl = UISegmentedControl(items: options.map { $0.string })
         super.init(frame: .zero)
         setup()
         setupUI()
@@ -65,6 +66,7 @@ class SegmentControl: UIView {
 
     @objc
     private func segmentValueChanged(_ sender: UISegmentedControl) {
-        valueChanged?(Float(sender.selectedSegmentIndex))
+        let selectedOption = options[sender.selectedSegmentIndex]
+        valueChanged?(selectedOption)
     }
 }

@@ -10,6 +10,7 @@ import AVFoundation
 
 class PlayerViewModel {
     private var cancellables = Set<AnyCancellable>()
+    private var notificationObservers: [NSObjectProtocol] = []
 
     @Published private(set) var currentVideo: Video?
     @Published var showControls: Bool = false
@@ -22,6 +23,7 @@ class PlayerViewModel {
     @Published private(set) var duration: Double = 0
     @Published private(set) var bufferedTime: Double = 0
     @Published var isSliderDragging: Bool = false
+    @Published var shouldAutoHideControls: Bool = UserSettings.shared.autoHideControls
 
     private(set) var player: AVPlayer?
     private var playerItem: AVPlayerItem?
@@ -32,6 +34,7 @@ class PlayerViewModel {
 
     deinit {
         removeTimeObserver()
+        NotificationCenter.default.removeObserver(self)
     }
 
     func loadVideo(_ video: Video) {
@@ -69,6 +72,7 @@ class PlayerViewModel {
         }
 
         player?.play()
+        player?.rate = UserSettings.shared.playbackSpeed
         isPlaying = true
     }
 
@@ -98,6 +102,11 @@ class PlayerViewModel {
         let newTime = max(currentTime - seconds, 0)
         seek(to: newTime)
     }
+
+    func setPlaybackRate(_ rate: Float) {
+        player?.rate = rate
+    }
+
 
     // MARK: - Private Methods
     private func observePlayerItem() {
@@ -149,5 +158,36 @@ class PlayerViewModel {
             player.removeTimeObserver(timeObserver)
             self.timeObserver = nil
         }
+    }
+
+    func setupSettingsObservers() {
+        cleanupObservers()
+
+        let autoHideObserver = NotificationCenter.default.addObserver(
+            forName: .autoHideControlsSettingChanged,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                let autoHide = UserSettings.shared.autoHideControls
+                self.shouldAutoHideControls = autoHide
+            }
+
+        // Observe playback speed setting changes
+        let speedObserver = NotificationCenter.default.addObserver(
+            forName: .playbackSpeedSettingChanged,
+            object: nil,
+            queue: .main) { [weak self] notification in
+                guard let self = self else { return }
+                let speed = UserSettings.shared.playbackSpeed
+                self.setPlaybackRate(speed)
+            }
+
+        notificationObservers.append(contentsOf: [autoHideObserver, speedObserver])
+
+    }
+
+    private func cleanupObservers() {
+        notificationObservers.forEach { NotificationCenter.default.removeObserver($0) }
+        notificationObservers.removeAll()
     }
 }
