@@ -86,49 +86,13 @@ class PlayerViewController: UIViewController {
         controlView.snp.makeConstraints({
             $0.edges.equalToSuperview()
         })
-        titleLabel.snp.makeConstraints({
-            $0.top.equalToSuperview().offset(20)
-            $0.leading.equalToSuperview().offset(40)
-            $0.width.equalToSuperview().multipliedBy(0.6)
-        })
-
-        closeButton.snp.makeConstraints({
-            $0.top.equalToSuperview().offset(20)
-            $0.trailing.equalToSuperview().offset(-20)
-            $0.width.height.equalTo(40)
-        })
-        settingButton.snp.makeConstraints({
-            $0.top.equalToSuperview().offset(20)
-            $0.trailing.equalTo(closeButton.snp.leading).offset(-10)
-            $0.width.height.equalTo(40)
-        })
-        playButton.snp.makeConstraints({
-            $0.center.equalToSuperview()
-            $0.width.height.equalTo(60)
-        })
-        rewindButton.snp.makeConstraints({
-            $0.centerY.equalTo(playButton)
-            $0.trailing.equalTo(playButton.snp.leading).offset(-70)
-            $0.size.equalTo(playButton)
-        })
-        forwardButton.snp.makeConstraints({
-            $0.centerY.equalTo(playButton)
-            $0.leading.equalTo(playButton.snp.trailing).offset(70)
-            $0.size.equalTo(playButton)
-        })
-        timeSlider.snp.makeConstraints({
-            $0.leading.equalToSuperview().offset(40)
-            $0.bottom.equalToSuperview().offset(-50)
-            $0.trailing.equalTo(displayTimeLabel.snp.leading).offset(-20)
-        })
-        displayTimeLabel.snp.makeConstraints({
-            $0.trailing.equalToSuperview().offset(-40)
-            $0.centerY.equalTo(timeSlider)
-        })
-        currentTimeLabel.snp.makeConstraints({
+        currentTimeLabel.snp.remakeConstraints({
             $0.bottom.equalTo(timeSlider.snp.top).offset(-5)
             $0.centerX.equalTo(timeSlider.snp.leading)
         })
+
+        let orientation = UIDevice.current.orientation
+        updateControlsConstraintsForNewOrientation(isPortrait: orientation.isPortrait)
     }
 
     private func binding() {
@@ -442,23 +406,108 @@ class PlayerViewController: UIViewController {
 }
 
 extension PlayerViewController {
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .landscape
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-
-    override var prefersHomeIndicatorAutoHidden: Bool {
-        return true
-    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate { _ in
-            self.playerLayer.frame = self.playerView.bounds
+        coordinator.animate(alongsideTransition: { _ in
+            self.updateControlsConstraintsForNewOrientation(isPortrait: size.height > size.width)
+        })
+    }
+
+    func updateControlsConstraintsForNewOrientation(isPortrait: Bool) {
+
+
+        if isPortrait {
+            setupPortraitConstraints()
+        } else {
+            setupLandscapeConstraints()
         }
+
+        // 強制更新畫面
+        view.layoutIfNeeded()
+    }
+
+    private func setupLandscapeConstraints() {
+        titleLabel.snp.remakeConstraints({
+            $0.centerY.equalTo(closeButton)
+            $0.leading.equalToSuperview().offset(40)
+            $0.width.equalToSuperview().multipliedBy(0.6)
+        })
+
+        closeButton.snp.remakeConstraints({
+            $0.top.equalToSuperview().offset(20)
+            $0.trailing.equalToSuperview().offset(-40)
+            $0.width.height.equalTo(40)
+        })
+        settingButton.snp.remakeConstraints({
+            $0.top.equalToSuperview().offset(20)
+            $0.trailing.equalTo(closeButton.snp.leading).offset(-10)
+            $0.width.height.equalTo(40)
+        })
+        playButton.snp.remakeConstraints({
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(60)
+        })
+        rewindButton.snp.remakeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.trailing.equalTo(playButton.snp.leading).offset(-70)
+            $0.size.equalTo(playButton)
+        })
+        forwardButton.snp.remakeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.leading.equalTo(playButton.snp.trailing).offset(70)
+            $0.size.equalTo(playButton)
+        })
+        timeSlider.snp.remakeConstraints({
+            $0.leading.equalToSuperview().offset(40)
+            $0.bottom.equalToSuperview().offset(-50)
+            $0.trailing.equalTo(displayTimeLabel.snp.leading).offset(-20)
+        })
+        displayTimeLabel.snp.remakeConstraints({
+            $0.trailing.equalToSuperview().offset(-40)
+            $0.centerY.equalTo(timeSlider)
+        })
+    }
+
+    private func setupPortraitConstraints() {
+        titleLabel.snp.remakeConstraints({
+            $0.centerY.equalTo(closeButton)
+            $0.leading.equalToSuperview().offset(10)
+            $0.width.equalToSuperview().multipliedBy(0.6)
+        })
+
+        closeButton.snp.remakeConstraints({
+            $0.top.equalTo(controlView.safeAreaLayoutGuide.snp.top).offset(20)
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.width.height.equalTo(40)
+        })
+        settingButton.snp.remakeConstraints({
+            $0.top.equalTo(controlView.safeAreaLayoutGuide.snp.top).offset(20)
+            $0.trailing.equalTo(closeButton.snp.leading).offset(-10)
+            $0.width.height.equalTo(40)
+        })
+        playButton.snp.remakeConstraints({
+            $0.center.equalToSuperview()
+            $0.width.height.equalTo(40)
+        })
+        rewindButton.snp.remakeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.trailing.equalTo(playButton.snp.leading).offset(-50)
+            $0.size.equalTo(playButton)
+        })
+        forwardButton.snp.remakeConstraints({
+            $0.centerY.equalTo(playButton)
+            $0.leading.equalTo(playButton.snp.trailing).offset(50)
+            $0.size.equalTo(playButton)
+        })
+        timeSlider.snp.remakeConstraints({
+            $0.leading.equalToSuperview().offset(20)
+            $0.bottom.equalTo(controlView.safeAreaLayoutGuide.snp.bottom).offset(-20)
+            $0.trailing.equalTo(displayTimeLabel.snp.leading).offset(-10)
+        })
+        displayTimeLabel.snp.remakeConstraints({
+            $0.trailing.equalToSuperview().offset(-20)
+            $0.centerY.equalTo(timeSlider)
+        })
     }
 }
