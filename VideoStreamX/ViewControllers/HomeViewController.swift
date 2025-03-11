@@ -23,7 +23,7 @@ class HomeViewController: UIViewController {
         return tableView
     }()
 
-    init(viewModel: HomeViewModel = HomeViewModel(service: SampleVideoService())) {
+    init(viewModel: HomeViewModel = HomeViewModel(service: GoogleVideoService())) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

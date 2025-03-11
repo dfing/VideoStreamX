@@ -16,7 +16,7 @@ class PlayerViewController: UIViewController {
 
     private var controlsHideWorkItem: DispatchWorkItem?
 
-    init(video: Video) {
+    init(video: VideoData) {
         self.viewModel = PlayerViewModel()
         super.init(nibName: nil, bundle: nil)
         self.viewModel.loadVideo(video)

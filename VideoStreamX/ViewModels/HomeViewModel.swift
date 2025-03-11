@@ -9,13 +9,13 @@ import Combine
 import Foundation
 
 class HomeViewModel {
-    @Published var videos: [Video] = []
+    @Published var videos: [VideoData] = []
 
-    private let service: AnyVideoService<Video>
+    private let service: any VideoService
     private var cancellables = Set<AnyCancellable>()
 
-    init<S: VideoService>(service: S) where S.ModelType == Video {
-        self.service = AnyVideoService(service)
+    init<S: VideoService>(service: S) where S.ModelType == VideoData {
+        self.service = service
         fetch()
     }
 
@@ -32,17 +32,3 @@ class HomeViewModel {
             .store(in: &cancellables)
     }
 }
-
-/*
- struct Movie: Codable { /* properties */ }
-
- class MovieVideoService: VideoServiceBase {
- typealias VideoType = Movie
- func fetchVideos() -> AnyPublisher<[Movie], Error> { /* implementation */ }
- }
-
- class MovieViewModel {
- private let service: AnyVideoService<Movie>
- init<S: VideoServiceBase>(service: S) where S.VideoType == Movie { /* ... */ }
- }
- */

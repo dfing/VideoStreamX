@@ -29,7 +29,7 @@ class HomeCollectionViewController: UIViewController {
         return collectionView
     }()
 
-    init(viewModel: HomeViewModel = HomeViewModel(service: SampleVideoService())) {
+    init(viewModel: HomeViewModel = HomeViewModel(service: OthersVideoService())) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

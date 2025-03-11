@@ -12,7 +12,7 @@ class PlayerViewModel {
     private var cancellables = Set<AnyCancellable>()
     private var notificationObservers: [NSObjectProtocol] = []
 
-    @Published private(set) var currentVideo: Video?
+    @Published private(set) var currentVideo: VideoData?
     @Published var showControls: Bool = false
     @Published private(set) var isPlaying: Bool = false
     @Published private(set) var isLoading: Bool = false
@@ -38,7 +38,7 @@ class PlayerViewModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func loadVideo(_ video: Video) {
+    func loadVideo(_ video: VideoData) {
         self.currentVideo = video
         self.isLoading = true
         self.isPlayReady = false

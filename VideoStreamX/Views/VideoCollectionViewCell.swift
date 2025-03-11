@@ -90,7 +90,7 @@ class VideoCollectionViewCell: UICollectionViewCell {
     }
 
     // MARK: -
-    func configure(with video: Video) {
+    func configure(with video: VideoDataProtocol) {
         thumbnailImageView.sd_setImage(with: URL(string: video.thumbnailURL))
         titleLabel.text = video.title
         descLabel.text = video.description
