@@ -19,10 +19,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: windowScene)
-        let viewcontroller = HomeCollectionViewController()
-        let nav = UINavigationController(rootViewController: viewcontroller)
 
-        window.rootViewController = nav
+        // Create tab bar controller
+        let tabBarController = UITabBarController()
+
+        // First tab: HomeViewController
+        let homeVC = HomeViewController()
+        let homeNav = UINavigationController(rootViewController: homeVC)
+        homeNav.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
+
+        // Second tab: HomeCollectionViewController
+        let collectionVC = HomeCollectionViewController()
+        let collectionNav = UINavigationController(rootViewController: collectionVC)
+        collectionNav.tabBarItem = UITabBarItem(title: "Others", image: UIImage(systemName: "rectangle.grid.2x2"), tag: 1)
+
+        // Set the view controllers for the tab bar controller
+        tabBarController.viewControllers = [homeNav, collectionNav]
+
+        window.rootViewController = tabBarController
         window.makeKeyAndVisible()
         self.window = window
     }
@@ -61,4 +75,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 }
-
